@@ -1,0 +1,33 @@
+//@version=5
+strategy("Stan Weistein", overlay=true)
+
+MA30 = ta.sma(close, 30) // calculate 30 week moving average
+plot(MA30, color =color.new(color.red,40)) 
+vol = ta.sma(volume,5) //consolidation
+
+indexId = input.symbol("SPY",title="Comparision")
+indexSymbol = request.security(indexId,timeframe.period,close) //SPY data
+len = input.int(50, minval=1, title="Period")
+base  = request.security(syminfo.tickerid,timeframe.period,close)
+RS = base / base[len] /(indexSymbol / indexSymbol[len]) - 1 //Relative Strength of the stock to SPY index
+plot(RS,title="Relative Strength" ,color =color.new(color.green,40))
+
+long = close > MA30
+exit = close < MA30
+pastHigh = ta.highest(high[1],52) 
+if long and RS > 0 and volume > vol and close > pastHigh //trade conditions
+    strategy.entry('long',strategy.long)
+if exit
+    strategy.close('long')
+
+
+
+
+    
+
+         
+       
+
+
+
+
